@@ -15,25 +15,26 @@ const gulp = require('gulp'),
 	sourcemaps = require('gulp-sourcemaps'),
 	rimraf = require('rimraf'),
     babel = require('gulp-babel'),
+    csscomb = require('gulp-csscomb'),
     reload = browserSync.reload;
 
 let path = {    
-    dist: { //Тут мы укажем куда складывать готовые после сборки файлы
+    dist: {
         html: 'dist/',
         js: 'dist/js/',
         css: 'dist/css/',
         img: 'dist/img/'
     },
-    app: { //Пути откуда брать исходники
-        html: 'app/*.html', //Синтаксис src/*.html говорит gulp что мы хотим взять все файлы с расширением .html
-        js: 'app/js/*.js',//В стилях и скриптах нам понадобятся только main файлы
-        css: 'app/css/*.css',
-        img: 'app/img/*.*' //Синтаксис img/**/*.* означает - взять все файлы всех расширений из папки и из вложенных каталогов
+    app: { 
+        html: 'app/*.html', 
+        js: 'app/js/main.js',
+        css: 'app/css/margin.css',
+        img: 'app/img/*.*'
     },
-    watch: { //Тут мы укажем, за изменением каких файлов мы хотим наблюдать
+    watch: { 
         html: 'app/*.html',
-        js: 'app/js/*.js',
-        css: 'app/css/*.css',
+        js: 'app/js/main.js',
+        css: 'app/css/main.css',
         img: 'app/img/*.*'
     },
     clean: './dist'
@@ -49,47 +50,43 @@ let config = {
     logPrefix: "ola"
 };
 
-gulp.task('bump', function(){ //обновляет package.json
+gulp.task('bump', function(){ 
   gulp.src('./package.json')
   .pipe(bump())
   .pipe(gulp.dest('./'));
 });
 
 gulp.task('html:build', function () {
-    gulp.src(path.app.html) //Выберем файлы по нужному пути
+    gulp.src(path.app.html) 
     	.pipe(htmlmin({ collapseWhitespace: true }))
-        .pipe(gulp.dest()) //Выплюнем их в папку build
-        .pipe(reload({stream: true})); //И перезагрузим наш сервер для обновлений
+        .pipe(gulp.dest(path.dist.html)) 
+        .pipe(reload({stream: true}));
 });
 
-gulp.task('csso', function () {
-    return gulp.src('app/js/main.js')
+gulp.task('js:build', function () {
+    return gulp.src(path.app.js)
         .pipe(babel({
             presets: ['env']
         }))
         .pipe(uglify())
-        .pipe(gulp.dest('dest'));
+        .pipe(gulp.dest(path.dist.js));
 });
 
-
-
 gulp.task('css:build', function () {
-    gulp.src(path.app.css) //Выберем наш main.css
-    	.pipe(csso())
-        .pipe(sourcemaps.init()) //То же самое что и с js
-        .pipe(gulp.dest(path.dist.css)) //И в build
-        .pipe(reload({stream: true}));
+    return gulp.src(path.app.css) 
+    	.pipe(csscomb())
+        .pipe(gulp.dest(path.dist.css)) 
 });
 
 gulp.task('image:build', function () {
-    gulp.src(path.app.img) //Выберем наши картинки
-        .pipe(imagemin({ //Сожмем их
+    gulp.src(path.app.img) 
+        .pipe(imagemin({ 
             progressive: true,
             svgoPlugins: [{removeViewBox: false}],
             use: [pngquant()],
             interlaced: true
         }))
-        .pipe(gulp.dest(path.dist.img)) //И бросим в build
+        .pipe(gulp.dest(path.dist.img)) 
         .pipe(reload({stream: true}));
 });
 

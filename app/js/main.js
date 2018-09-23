@@ -53,7 +53,7 @@ function dragNdrop() {
 
 	counters();
 
-	for (i = 0; i < draggableDivs.length; i++) {
+	for (let i = 0; i < draggableDivs.length; i++) {
 		draggableDivs[i].addEventListener('dragstart', dragStart);
 		draggableDivs[i].addEventListener('dragend', dragEnd);
 	};
