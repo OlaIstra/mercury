@@ -11,11 +11,11 @@ const gulp = require('gulp'),
 	imagemin = require('gulp-imagemin'),
 	pngquant = require('imagemin-pngquant'),
 	browserSync = require('browser-sync'),
-	cleanCSS = require('gulp-clean-css'),
 	sourcemaps = require('gulp-sourcemaps'),
 	rimraf = require('rimraf'),
     babel = require('gulp-babel'),
     csscomb = require('gulp-csscomb'),
+    cleanCSS = require('gulp-clean-css'),
     reload = browserSync.reload;
 
 let path = {    
@@ -28,7 +28,7 @@ let path = {
     app: { 
         html: 'app/*.html', 
         js: 'app/js/main.js',
-        css: 'app/css/margin.css',
+        css: 'app/css/main.css',
         img: 'app/img/*.*'
     },
     watch: { 
@@ -74,7 +74,7 @@ gulp.task('js:build', function () {
 
 gulp.task('css:build', function () {
     return gulp.src(path.app.css) 
-    	.pipe(csscomb())
+    	.pipe(cleanCSS({compatibility: 'ie8'}))
         .pipe(gulp.dest(path.dist.css)) 
 });
 
